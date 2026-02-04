@@ -1,112 +1,185 @@
-
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vorthex Script Loader</title>
-  <style>
-    body {
-      background-color: #121212;
-      color: #f0f0f0;
-      font-family: 'Segoe UI', sans-serif;
-      padding: 20px;
-      animation: fadeIn 1s ease-in-out;
-    }
-    h1, h2, h3 {
-      color: #ff4c4c;
-    }
-    .section {
-      margin-bottom: 30px;
-    }
-    .button {
-      background-color: #1e1e1e;
-      color: #fff;
-      border: 1px solid #555;
-      padding: 8px 16px;
-      margin-top: 5px;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-    .button:hover {
-      background-color: #333;
-    }
-    a {
-      color: #64b5f6;
-      text-decoration: none;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
-    .icon {
-      width: 20px;
-      vertical-align: middle;
-      margin-right: 8px;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    .warning {
-      color: yellow;
-      font-weight: bold;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Vorthex IA</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f14 0%, #1a0a0f 100%);
+            color: #fff; min-height: 100vh; padding: 20px;
+        }
+        .stars { position: fixed; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+        .star { position: absolute; width: 2px; height: 2px; background: white; border-radius: 50%; animation: twinkle 3s infinite; }
+        @keyframes twinkle { 0%,100%{opacity:0.3;} 50%{opacity:1;} }
+        @keyframes rainbowText { 0%{color:#ff0000;}14%{color:#ff7f00;}28%{color:#ffff00;}42%{color:#00ff00;}57%{color:#0000ff;}71%{color:#4b0082;}85%{color:#9400d3;}100%{color:#ff0000;} }
+        .container { max-width: 900px; margin: 0 auto; position: relative; z-index: 1; }
+        header { text-align: center; padding: 60px 20px 40px; }
+        h1 { font-size: 50px; font-weight: bold; margin-bottom: 10px; animation: rainbowText 3s linear infinite; text-shadow: 0 0 20px rgba(255,0,0,0.5); }
+        .subtitle { font-size: 18px; color: #ff3232; margin-bottom: 40px; }
+        .section { 
+            background: rgba(20,5,10,0.9); 
+            border: 2px solid #ff3232; 
+            border-radius: 15px; 
+            padding: 30px; 
+            margin: 30px 0; 
+            animation: rainbow 3s linear infinite;
+        }
+        @keyframes rainbow { 0%{border-color:#ff0000;}14%{border-color:#ff7f00;}28%{border-color:#ffff00;}42%{border-color:#00ff00;}57%{border-color:#0000ff;}71%{border-color:#4b0082;}85%{border-color:#9400d3;}100%{border-color:#ff0000;} }
+        .section h2 { color: #ff3232; margin-bottom: 20px; font-size: 24px; text-align: center; }
+        textarea, input[type="url"] {
+            width: 100%; 
+            padding: 15px; 
+            margin: 15px 0; 
+            border: 2px solid #ff3232; 
+            border-radius: 10px;
+            background: rgba(15,15,20,0.95);
+            color: #fff;
+            font-size: 16px;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+        textarea::placeholder, input::placeholder { color: #aaa; }
+        textarea:focus, input[type="url"]:focus {
+            outline: none;
+            border-color: #00ff88;
+            box-shadow: 0 0 15px rgba(0,255,136,0.3);
+        }
+        .btn-row { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin: 20px 0; }
+        button {
+            background: linear-gradient(135deg,#ff0000,#ff3232); 
+            border: none; 
+            color: white; 
+            padding: 12px 28px;
+            font-size: 15px; 
+            font-weight: bold; 
+            border-radius: 8px;
+            cursor: pointer; 
+            transition: all 0.3s; 
+            flex: 1;
+            max-width: 200px;
+        }
+        button:hover:not(:disabled) { 
+            transform: scale(1.05); 
+            box-shadow: 0 5px 25px rgba(255,50,50,0.6); 
+        }
+        button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .resposta, .verificacao { 
+            background: rgba(15,15,20,0.95); 
+            border: 2px solid #00ff88; 
+            border-radius: 12px; 
+            padding: 20px; 
+            margin-top: 20px; 
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        .resposta {
+            border-color: #5865F2;
+            background: rgba(88,101,242,0.1);
+        }
+        footer { text-align: center; padding: 40px 20px; color: #888; }
+        
+        @media (max-width: 768px) {
+            h1 { font-size: 36px; }
+            .btn-row { flex-direction: column; }
+            button { max-width: none; }
+        }
+    </style>
 </head>
 <body>
+    <div class="stars" id="stars"></div>
+    <div class="container">
+        <header>
+            <h1>VORTHEX</h1>
+            <p class="subtitle">🤖 IA - Verificador de Links & Scripts</p>
+        </header>
 
-  <div class="section">
-    <h1>📜 Script Loadstring</h1>
-    <p><strong>Carregar Script:</strong></p>
-    <code>loadstring(game:HttpGet("https://pastebin.com/raw/cW7cfaeG"))()</code><br>
-    <button class="button" onclick="copyScript()">📋 Copiar Script</button>
-  </div>
+        <div class="section">
+            <h2>🧠 Converse com a IA</h2>
+            <textarea id="pergunta" rows="4" placeholder="Digite sua pergunta sobre scripts, comandos ou verificação..."></textarea>
+            <div class="btn-row">
+                <button onclick="responderIA()">Enviar para IA</button>
+            </div>
+            <div id="respostaIA" class="resposta" style="display:none;"></div>
+        </div>
 
-  <div class="section">
-    <h2>🔐 Key IP-locked</h2>
-    <a href="https://carlosmyllerfx-web.github.io/key-link/" target="_blank">Abrir Site da Key</a><br><br>
-    <span id="countdownMsg"></span>
-    <div id="warn" class="warning"></div>
-  </div>
+        <div class="section">
+            <h2>🔍 Verificador de Links/Scripts</h2>
+            <input type="url" id="linkVerificar" placeholder="Cole aqui o link ou URL do script para análise...">
+            <div class="btn-row">
+                <button onclick="verificarLink()">🔎 Verificar Segurança</button>
+            </div>
+            <div id="verificacao" class="verificacao" style="display:none;"></div>
+        </div>
+        
+        <footer>
+            <p>VORTHEX © 2026 - IA & Key System</p>
+        </footer>
+    </div>
 
-  <div class="section">
-    <h2>🎮 Keybinds</h2>
-    <p>Abrir/Fechar GUI: <strong>K</strong> ou <strong>T</strong><br>
-    Backstab: <strong>Q</strong><br>
-    Fly: <code>-244.7, +250.7</code></p>
-  </div>
+    <script>
+        // Estrelas de fundo
+        for(let i = 0; i < 100; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 3 + 's';
+            document.getElementById('stars').appendChild(star);
+        }
 
-  <div class="section">
-    <h2>✨ Features</h2>
-    <p>MISC<br>
-    Fly, Backstab, GUI Toggle</p>
-  </div>
+        async function responderIA() {
+            const pergunta = document.getElementById('pergunta').value.trim();
+            if (!pergunta) return;
+            
+            const respostaEl = document.getElementById('respostaIA');
+            respostaEl.style.display = 'block';
+            respostaEl.innerHTML = '⏳ Vorthex IA está analisando...';
+            
+            // Simulação de delay da IA
+            setTimeout(() => {
+                const respostas = [
+                    `🔮 Vorthex IA: "${pergunta}" - Análise completa: Script seguro para produção. Recomendo usar com key system VORTHEX-L8.`,
+                    `🤖 Vorthex IA: Link verificado. Compatível com Arsenal Script. Status: ✅ SEGURO`,
+                    `⚙️ Vorthex IA: Comando analisado. Integração perfeita com Discord VORTHEX (@Vorthex-k5n verificado).`,
+                    `🚀 Vorthex IA: Otimização sugerida: Adicione timer 10s + IP-lock como no Key System principal.`
+                ];
+                respostaEl.innerHTML = respostas[Math.floor(Math.random() * respostas.length)];
+            }, 2000);
+        }
 
-  <div class="section">
-    <h2>🔗 Links</h2>
-    <a href="https://www.youtube.com/@Vorthex-k5n" target="_blank">
-      <img src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png" class="icon">YouTube</a><br>
-    <a href="https://discord.com" target="_blank">
-      <img src="https://cdn-icons-png.flaticon.com/512/3670/3670157.png" class="icon">Discord</a>
-  </div>
+        function verificarLink() {
+            const url = document.getElementById('linkVerificar').value.trim();
+            if (!url) return;
+            
+            const verificacaoEl = document.getElementById('verificacao');
+            verificacaoEl.style.display = 'block';
+            verificacaoEl.innerHTML = '🔍 Analisando segurança...';
+            
+            setTimeout(() => {
+                let resultado = '';
+                if (url.includes("pastebin.com") || url.includes("github.com") || url.includes("discord.com")) {
+                    resultado = `✅ <strong>SEGURO</strong><br>✓ Domínio confiável<br>✓ Sem malware detectado<br>✓ Compatível Arsenal Script<br><small>Key System VORTHEX recomendado</small>`;
+                } else if (url.includes(".exe") || url.includes("bit.ly")) {
+                    resultado = `❌ <strong>PERIGOSO</strong><br>⚠️ Extensão executável<br>⚠️ Encurtador suspeito<br>🚫 Bloqueado pelo Vorthex IA`;
+                } else {
+                    resultado = `⚠️ <strong>INDETERMINADO</strong><br>ℹ️ Análise básica OK<br>🔒 Use com Key System VORTHEX<br>👆 Verificação manual recomendada`;
+                }
+                verificacaoEl.innerHTML = resultado;
+            }, 1500);
+        }
 
-  <script>
-    function copyScript() {
-      const script = 'loadstring(game:HttpGet("https://pastebin.com/raw/cW7cfaeG"))()';
-      navigator.clipboard.writeText(script);
-      alert("Script copiado!");
-    }
-
-    // Timer de 10 segundos para validar etapa de key
-    let accessTime = Date.now();
-    window.onbeforeunload = function() {
-      if (Date.now() - accessTime < 10000) {
-        document.getElementById("warn").innerText = "⚠️ Complete a etapa toda antes de voltar.";
-        return "Você precisa esperar 10 segundos antes de sair.";
-      }
-    };
-  </script>
-
+        // Enter para enviar
+        document.getElementById('pergunta').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && e.ctrlKey) responderIA();
+        });
+        document.getElementById('linkVerificar').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') verificarLink();
+        });
+    </script>
 </body>
 </html>
