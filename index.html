@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title>Vorthex IA</title>
+    <title>Vorthex IA - Chat Real</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
@@ -20,73 +20,98 @@
         header { text-align: center; padding: 60px 20px 40px; }
         h1 { font-size: 50px; font-weight: bold; margin-bottom: 10px; animation: rainbowText 3s linear infinite; text-shadow: 0 0 20px rgba(255,0,0,0.5); }
         .subtitle { font-size: 18px; color: #ff3232; margin-bottom: 40px; }
-        .section { 
+        .chat-container { 
             background: rgba(20,5,10,0.9); 
             border: 2px solid #ff3232; 
             border-radius: 15px; 
             padding: 30px; 
             margin: 30px 0; 
             animation: rainbow 3s linear infinite;
+            max-height: 500px;
+            display: flex;
+            flex-direction: column;
         }
         @keyframes rainbow { 0%{border-color:#ff0000;}14%{border-color:#ff7f00;}28%{border-color:#ffff00;}42%{border-color:#00ff00;}57%{border-color:#0000ff;}71%{border-color:#4b0082;}85%{border-color:#9400d3;}100%{border-color:#ff0000;} }
-        .section h2 { color: #ff3232; margin-bottom: 20px; font-size: 24px; text-align: center; }
-        textarea, input[type="url"] {
-            width: 100%; 
-            padding: 15px; 
-            margin: 15px 0; 
-            border: 2px solid #ff3232; 
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding-right: 10px;
+        }
+        .message {
+            background: rgba(15,15,20,0.95);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #5865F2;
+        }
+        .message.user {
+            border-left-color: #00ff88;
+            background: rgba(0,255,136,0.1);
+            margin-left: 20%;
+            text-align: right;
+        }
+        .message.ai {
+            border-left-color: #ff3232;
+            background: rgba(255,50,50,0.1);
+        }
+        .chat-input {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        #pergunta {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #ff3232;
             border-radius: 10px;
             background: rgba(15,15,20,0.95);
             color: #fff;
             font-size: 16px;
             font-family: inherit;
-            resize: vertical;
-            transition: border-color 0.3s;
         }
-        textarea::placeholder, input::placeholder { color: #aaa; }
-        textarea:focus, input[type="url"]:focus {
+        #pergunta::placeholder { color: #aaa; }
+        #pergunta:focus {
             outline: none;
             border-color: #00ff88;
             box-shadow: 0 0 15px rgba(0,255,136,0.3);
         }
-        .btn-row { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin: 20px 0; }
         button {
             background: linear-gradient(135deg,#ff0000,#ff3232); 
             border: none; 
             color: white; 
-            padding: 12px 28px;
+            padding: 15px 30px;
             font-size: 15px; 
             font-weight: bold; 
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer; 
             transition: all 0.3s; 
-            flex: 1;
-            max-width: 200px;
         }
         button:hover:not(:disabled) { 
             transform: scale(1.05); 
             box-shadow: 0 5px 25px rgba(255,50,50,0.6); 
         }
-        button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-        .resposta, .verificacao { 
-            background: rgba(15,15,20,0.95); 
-            border: 2px solid #00ff88; 
-            border-radius: 12px; 
-            padding: 20px; 
-            margin-top: 20px; 
-            font-size: 16px;
-            line-height: 1.5;
+        button:disabled { 
+            opacity: 0.6; 
+            cursor: not-allowed; 
+            transform: none; 
         }
-        .resposta {
-            border-color: #5865F2;
-            background: rgba(88,101,242,0.1);
+        .status {
+            text-align: center;
+            padding: 10px;
+            font-size: 14px;
+            color: #00ff88;
+            margin-bottom: 10px;
+        }
+        .status.error {
+            color: #ff4444;
         }
         footer { text-align: center; padding: 40px 20px; color: #888; }
         
         @media (max-width: 768px) {
             h1 { font-size: 36px; }
-            .btn-row { flex-direction: column; }
-            button { max-width: none; }
+            .chat-input { flex-direction: column; }
+            button { width: 100%; }
         }
     </style>
 </head>
@@ -95,34 +120,30 @@
     <div class="container">
         <header>
             <h1>VORTHEX</h1>
-            <p class="subtitle">🤖 IA - Verificador de Links & Scripts</p>
+            <p class="subtitle">🤖 Chat IA Real - Backend 127.0.0.1:5000</p>
         </header>
 
-        <div class="section">
-            <h2>🧠 Converse com a IA</h2>
-            <textarea id="pergunta" rows="4" placeholder="Digite sua pergunta sobre scripts, comandos ou verificação..."></textarea>
-            <div class="btn-row">
-                <button onclick="responderIA()">Enviar para IA</button>
+        <div class="chat-container">
+            <div class="status" id="status">🔌 Conectando com Vorthex IA Backend...</div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="message ai">
+                    👋 Olá! Sou a Vorthex IA conectada ao backend local (127.0.0.1:5000).<br>
+                    Digite sua pergunta e pressione Enter ou clique em Enviar!
+                </div>
             </div>
-            <div id="respostaIA" class="resposta" style="display:none;"></div>
-        </div>
-
-        <div class="section">
-            <h2>🔍 Verificador de Links/Scripts</h2>
-            <input type="url" id="linkVerificar" placeholder="Cole aqui o link ou URL do script para análise...">
-            <div class="btn-row">
-                <button onclick="verificarLink()">🔎 Verificar Segurança</button>
+            <div class="chat-input">
+                <input type="text" id="pergunta" placeholder="Digite sua pergunta para a IA real..." autocomplete="off">
+                <button onclick="enviarPergunta()" id="btnEnviar">Enviar</button>
             </div>
-            <div id="verificacao" class="verificacao" style="display:none;"></div>
         </div>
         
         <footer>
-            <p>VORTHEX © 2026 - IA & Key System</p>
+            <p>VORTHEX © 2026 - IA Backend Real | Arsenal Script Compatible</p>
         </footer>
     </div>
 
     <script>
-        // Estrelas de fundo
+        // Estrelas animadas
         for(let i = 0; i < 100; i++) {
             const star = document.createElement('div');
             star.className = 'star';
@@ -132,53 +153,78 @@
             document.getElementById('stars').appendChild(star);
         }
 
-        async function responderIA() {
-            const pergunta = document.getElementById('pergunta').value.trim();
-            if (!pergunta) return;
-            
-            const respostaEl = document.getElementById('respostaIA');
-            respostaEl.style.display = 'block';
-            respostaEl.innerHTML = '⏳ Vorthex IA está analisando...';
-            
-            // Simulação de delay da IA
-            setTimeout(() => {
-                const respostas = [
-                    `🔮 Vorthex IA: "${pergunta}" - Análise completa: Script seguro para produção. Recomendo usar com key system VORTHEX-L8.`,
-                    `🤖 Vorthex IA: Link verificado. Compatível com Arsenal Script. Status: ✅ SEGURO`,
-                    `⚙️ Vorthex IA: Comando analisado. Integração perfeita com Discord VORTHEX (@Vorthex-k5n verificado).`,
-                    `🚀 Vorthex IA: Otimização sugerida: Adicione timer 10s + IP-lock como no Key System principal.`
-                ];
-                respostaEl.innerHTML = respostas[Math.floor(Math.random() * respostas.length)];
-            }, 2000);
+        const statusEl = document.getElementById('status');
+        const chatMessages = document.getElementById('chatMessages');
+        const input = document.getElementById('pergunta');
+        const btnEnviar = document.getElementById('btnEnviar');
+
+        function addMessage(content, isUser = false) {
+            const message = document.createElement('div');
+            message.className = `message ${isUser ? 'user' : 'ai'}`;
+            message.innerHTML = content;
+            chatMessages.appendChild(message);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
-        function verificarLink() {
-            const url = document.getElementById('linkVerificar').value.trim();
-            if (!url) return;
-            
-            const verificacaoEl = document.getElementById('verificacao');
-            verificacaoEl.style.display = 'block';
-            verificacaoEl.innerHTML = '🔍 Analisando segurança...';
-            
-            setTimeout(() => {
-                let resultado = '';
-                if (url.includes("pastebin.com") || url.includes("github.com") || url.includes("discord.com")) {
-                    resultado = `✅ <strong>SEGURO</strong><br>✓ Domínio confiável<br>✓ Sem malware detectado<br>✓ Compatível Arsenal Script<br><small>Key System VORTHEX recomendado</small>`;
-                } else if (url.includes(".exe") || url.includes("bit.ly")) {
-                    resultado = `❌ <strong>PERIGOSO</strong><br>⚠️ Extensão executável<br>⚠️ Encurtador suspeito<br>🚫 Bloqueado pelo Vorthex IA`;
-                } else {
-                    resultado = `⚠️ <strong>INDETERMINADO</strong><br>ℹ️ Análise básica OK<br>🔒 Use com Key System VORTHEX<br>👆 Verificação manual recomendada`;
+        async function enviarPergunta() {
+            const pergunta = input.value.trim();
+            if (!pergunta) return;
+
+            // Desabilita input durante envio
+            input.disabled = true;
+            btnEnviar.disabled = true;
+            statusEl.textContent = '⏳ Enviando para Vorthex IA Backend...';
+            statusEl.className = 'status';
+
+            // Adiciona mensagem do usuário
+            addMessage(pergunta, true);
+            input.value = '';
+
+            try {
+                const response = await fetch("http://127.0.0.1:5000/perguntar", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ pergunta: pergunta })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: Backend offline`);
                 }
-                verificacaoEl.innerHTML = resultado;
-            }, 1500);
+
+                const data = await response.json();
+                addMessage(data.resposta);
+                statusEl.textContent = '✅ Resposta recebida da Vorthex IA!';
+                statusEl.className = 'status';
+
+            } catch (error) {
+                console.error('Erro:', error);
+                addMessage(`❌ Erro de conexão: ${error.message}<br>🔧 Verifique se o backend está rodando em 127.0.0.1:5000`);
+                statusEl.textContent = '❌ Backend offline - Inicie o servidor Python/Flask';
+                statusEl.className = 'status error';
+            } finally {
+                input.disabled = false;
+                btnEnviar.disabled = false;
+                input.focus();
+            }
         }
 
         // Enter para enviar
-        document.getElementById('pergunta').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter' && e.ctrlKey) responderIA();
+        input.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                enviarPergunta();
+            }
         });
-        document.getElementById('linkVerificar').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') verificarLink();
+
+        // Focus automático
+        input.focus();
+
+        // Auto-scroll suave
+        chatMessages.addEventListener('scroll', function() {
+            const { scrollTop, scrollHeight, clientHeight } = this;
+            if (scrollTop + clientHeight < scrollHeight - 50) {
+                // Usuário rolou pra cima, não auto-scroll
+            }
         });
     </script>
 </body>
